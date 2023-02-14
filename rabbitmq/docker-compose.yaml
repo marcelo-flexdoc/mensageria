@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  rabbitmq:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    image: rabbitmq-management-local
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - flexdoc-net
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: flexdoc99
+
+networks:
+  flexdoc-net:
+    external: true

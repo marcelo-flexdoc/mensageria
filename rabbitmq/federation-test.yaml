@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  downstream:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    image: rabbitmq-management-local
+    container_name: rabbitmq-downstream
+    ports:
+      - "9090:15672"
+    networks:
+      - flexdoc-net
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: flexdoc99
+
+  upstream:
+    image: rabbitmq:management
+    container_name: rabbitmq-upstream
+    ports:
+      - "9091:15672"
+    networks:
+      - flexdoc-net
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: flexdoc99
+    depends_on: 
+      - downstream
+
+networks:
+  flexdoc-net:
+    external: true

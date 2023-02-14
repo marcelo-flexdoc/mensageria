@@ -1,0 +1,61 @@
+version: '3'
+services:
+
+  stats:
+    image: bitnami/rabbitmq
+    environment:
+      - RABBITMQ_NODE_TYPE=stats
+      - RABBITMQ_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=s3cr3tc00ki3
+      - RABBITMQ_USERNAME=root
+      - RABBITMQ_PASSWORD=password
+    ports:
+      - '15672:15672'
+      - '5672:5672'
+    volumes:
+      - 'rabbitmqstats_data:/bitnami'
+    restart: always
+    networks:
+      - brokers-net
+
+  queue-disc1:
+    image: bitnami/rabbitmq
+    environment:
+      - RABBITMQ_NODE_TYPE=queue-disc
+      - RABBITMQ_NODE_NAME=rabbit@queue-disc1
+      - RABBITMQ_CLUSTER_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=s3cr3tc00ki3
+    volumes:
+      - 'rabbitmqdisc1_data:/bitnami'
+    depends_on:
+      - stats
+    networks:
+      - brokers-net
+
+    restart: always
+  queue-ram1:
+    image: bitnami/rabbitmq
+    environment:
+      - RABBITMQ_NODE_TYPE=queue-ram
+      - RABBITMQ_NODE_NAME=rabbit@queue-ram1
+      - RABBITMQ_CLUSTER_NODE_NAME=rabbit@stats
+      - RABBITMQ_ERL_COOKIE=s3cr3tc00ki3
+    volumes:
+      - 'rabbitmqram1_data:/bitnami'
+    depends_on:
+      - stats
+    restart: always
+    networks:
+      - brokers-net
+
+volumes:
+  rabbitmqstats_data:
+    driver: local
+  rabbitmqdisc1_data:
+    driver: local
+  rabbitmqram1_data:
+    driver: local
+
+networks:
+  brokers-net:
+    driver: bridge
